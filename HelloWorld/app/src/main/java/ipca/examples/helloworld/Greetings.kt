@@ -51,7 +51,7 @@ fun Greeting( modifier: Modifier = Modifier) {
                 content = { Text(text = "Greet") }
             )
             Spacer(modifier = Modifier.padding(12.dp))
-            Button(onClick = buttonClick,
+            Button(onClick = {  greet = "Olá $name!" },
                 content = { Text(text = "Cumprimentar") }
             )
         }

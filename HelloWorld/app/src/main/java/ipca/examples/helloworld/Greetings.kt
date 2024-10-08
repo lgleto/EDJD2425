@@ -33,7 +33,7 @@ fun Greeting( modifier: Modifier = Modifier) {
 
     val buttonClick : ()->Unit = {greet = "Hello $name!"}
 
-    var backButtonColor = ButtonDefaults.run { buttonColors(Pink80) }
+    bButtonDefaults.run { buttonColors(Pink80) }
 
     Column(modifier = modifier
         .padding(16.dp)

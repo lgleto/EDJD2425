@@ -27,14 +27,65 @@ import ipca.examples.calulator.ui.theme.Orange
 fun CalculatorScreen(modifier: Modifier = Modifier) {
 
     var displayText by remember { mutableStateOf("0") }
+    var operand by remember { mutableStateOf(0.0) }
+    var operator by remember { mutableStateOf("") }
+    var userIsInTheMiddleOfIntroduction by remember {
+        mutableStateOf(true)
+    }
 
-    val onNumPressed : (String) -> Unit = { num ->
-        if (displayText == "0") {
-            displayText = num
-        }else{
-            displayText += num
+    fun getDisplay() : Double {
+        return displayText.toDouble()
+    }
+
+    fun setDisplay (value : Double) {
+        if (value % 1 == 0.0) {
+            displayText = value.toInt().toString()
+        }else {
+            displayText = value.toString()
         }
     }
+
+    val onNumPressed : (String) -> Unit = { num ->
+        if (userIsInTheMiddleOfIntroduction) {
+            if (displayText == "0") {
+                if (num == ".") {
+                    displayText = "0."
+                } else {
+                    displayText = num
+                }
+            } else {
+
+                if (!displayText.contains('.') || num != ".") {
+                    displayText += num
+                }
+            }
+        }else {
+            displayText = num
+        }
+
+        userIsInTheMiddleOfIntroduction = true
+    }
+
+
+
+    val onOperatorPressed : (String) -> Unit = { op ->
+        if (operator.isNotEmpty()) {
+            when(operator) {
+                "+" -> operand += displayText.toDouble()
+                "-" -> operand -= displayText.toDouble()
+                "*" -> operand *= displayText.toDouble()
+                "/" -> operand /= displayText.toDouble()
+                "=" -> operator = ""
+            }
+            setDisplay(operand)
+        }
+
+        operand = getDisplay()
+        operator = op
+
+        userIsInTheMiddleOfIntroduction = false
+    }
+
 
     Column(modifier = modifier
         .padding(16.dp)) {
@@ -67,7 +118,7 @@ fun CalculatorScreen(modifier: Modifier = Modifier) {
                 modifier = Modifier.weight(1f),
                 label = "+",
                 isOperation = true,
-                onClick = { /*TODO*/ }
+                onClick = onOperatorPressed
             )
         }
         Row(modifier = Modifier
@@ -92,7 +143,7 @@ fun CalculatorScreen(modifier: Modifier = Modifier) {
                 modifier = Modifier.weight(1f),
                 label = "-",
                 isOperation = true,
-                onClick = onNumPressed
+                onClick = onOperatorPressed
             )
         }
         Row(modifier = Modifier
@@ -117,7 +168,7 @@ fun CalculatorScreen(modifier: Modifier = Modifier) {
                 modifier = Modifier.weight(1f),
                 label = "/",
                 isOperation = true,
-                onClick = { /*TODO*/ }
+                onClick = onOperatorPressed
             )
         }
         Row(modifier = Modifier
@@ -137,13 +188,13 @@ fun CalculatorScreen(modifier: Modifier = Modifier) {
                 modifier = Modifier.weight(1f),
                 label = "=",
                 isOperation = true,
-                onClick = { /*TODO*/ }
+                onClick = onOperatorPressed
             )
             CalcButton(
                 modifier = Modifier.weight(1f),
                 label = "*",
                 isOperation = true,
-                onClick = { /*TODO*/ }
+                onClick = onOperatorPressed
             )
         }
     }

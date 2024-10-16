@@ -5,6 +5,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import ipca.examples.dailynews.models.Article
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.OkHttpClient
@@ -13,15 +16,22 @@ import okhttp3.Response
 import org.json.JSONObject
 import java.io.IOException
 
+data class ArticlesState (
+    val articles: ArrayList<Article> = arrayListOf(),
+    val isLoading: Boolean = false,
+    val error: String? = null
+)
+
 class HomeViewModel : ViewModel() {
 
-    var articles = mutableStateOf(listOf<Article>())
-        private set
-    var isLoading = mutableStateOf(false)
-    var error = mutableStateOf<String?>(null)
+    private val _uiState = MutableStateFlow(ArticlesState())
+    val uiState : StateFlow<ArticlesState> = _uiState.asStateFlow()
 
     fun fetchArticles() {
-        isLoading.value = true
+
+        _uiState.value = ArticlesState(
+            isLoading = true,
+            error = null)
 
         val client = OkHttpClient()
 
@@ -32,12 +42,12 @@ class HomeViewModel : ViewModel() {
         client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
                 e.printStackTrace()
-                isLoading.value = true
-                error.value = e.message
+                _uiState.value = ArticlesState(
+                    isLoading = true,
+                    error = e.message)
             }
 
             override fun onResponse(call: Call, response: Response) {
-                isLoading.value = true
                 response.use {
                     if (!response.isSuccessful) throw IOException("Unexpected code $response")
                     val articlesResult = arrayListOf<Article>()
@@ -52,7 +62,10 @@ class HomeViewModel : ViewModel() {
                             articlesResult.add(article)
                         }
                     }
-                    articles.value = articlesResult
+                    _uiState.value = ArticlesState(
+                        articles = articlesResult,
+                        isLoading = false,
+                        error = null)
                 }
             }
         })

@@ -27,7 +27,7 @@ import java.util.Date
 
 @Composable
 fun RowArticle(modifier: Modifier = Modifier, article: Article) {
-    Row {
+    Row(modifier = modifier) {
         article.urlToImage?.let {
             AsyncImage(
                 model = it,

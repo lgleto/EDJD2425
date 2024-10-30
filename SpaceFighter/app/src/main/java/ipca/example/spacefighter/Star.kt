@@ -30,7 +30,8 @@ class Star {
 
     }
 
-    fun update() {
+    fun update(playerSpeed: Int) {
+        x -= playerSpeed
         x -= speed
 
         if (x < 0){

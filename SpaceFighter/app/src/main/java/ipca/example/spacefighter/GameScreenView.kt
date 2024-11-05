@@ -16,7 +16,7 @@ fun GameScreenView () {
     val screenHeightPx = screenHeight * density
 
     AndroidView(factory = { context ->
-            GameView(context = context,
+            GameScene(context = context,
                 width = screenWidthPx.toInt(),
                 height = screenHeightPx.toInt() )
         },

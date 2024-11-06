@@ -39,7 +39,13 @@ class MainActivity : ComponentActivity() {
                             })
                         }
                         composable("game_screen"){
-                            GameScreenView()
+                            GameScreenView() {
+                                navController.navigate("game_over")
+                            }
+
+                        }
+                        composable("game_over"){
+                            GameOverView()
                         }
                     }
                 }

@@ -22,6 +22,11 @@ class GameView : SurfaceView, Runnable {
     var enemies = arrayListOf<Enemy>()
     lateinit var player : Player
     lateinit var boom : Boom
+    lateinit var warrior : Warrior
+
+    var lives = 3
+
+    var onGameOver : () -> Unit = {}
 
     private fun init(context: Context, width: Int, height: Int){
 
@@ -37,6 +42,7 @@ class GameView : SurfaceView, Runnable {
         }
 
         player = Player(context, width, height)
+        warrior = Warrior(context, width, height)
         boom = Boom(context, width, height)
 
     }
@@ -92,10 +98,17 @@ class GameView : SurfaceView, Runnable {
                 boom.y = e.y
 
                 e.x = -300
+
+                lives -= 1
+
+                if (lives == 0 ){
+                    onGameOver()
+                }
             }
 
         }
         player.update()
+        warrior.update()
     }
 
     fun draw(){
@@ -120,6 +133,10 @@ class GameView : SurfaceView, Runnable {
             }
             canvas.drawBitmap(boom.bitmap, boom.x.toFloat(), boom.y.toFloat(), paint)
 
+            canvas.drawBitmap(warrior.bitmap, warrior.x.toFloat(), warrior.y.toFloat(), paint)
+
+            paint.textSize = 42f
+            canvas.drawText("Lives: $lives", 10f, 100f, paint)
 
             surfaceHolder.unlockCanvasAndPost(canvas)
         }
@@ -130,12 +147,19 @@ class GameView : SurfaceView, Runnable {
     }
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {
+
         when(event?.action){
             MotionEvent.ACTION_DOWN -> {
                 player.boosting = true
+                warrior.x = event.x.toInt()
+                warrior.y = event.y.toInt()
             }
             MotionEvent.ACTION_UP -> {
                 player.boosting = false
+            }
+            MotionEvent.ACTION_MOVE -> {
+                warrior.x = event.x.toInt()
+                warrior.y = event.y.toInt()
             }
         }
         return true

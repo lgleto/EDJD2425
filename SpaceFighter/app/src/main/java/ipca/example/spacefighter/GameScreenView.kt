@@ -33,15 +33,7 @@ fun GameScreenView (
     ) {
         it.resume()
         it.onGameOver = {
-
-            lifecycleOwner.lifecycleScope.launch(Dispatchers.Default) {
-                it.pause()
-                delay(1000)
-                lifecycleOwner.lifecycleScope.launch(Dispatchers.Main) {
-                    onGameOver()
-                }
-            }
-
+            onGameOver()
         }
     }
 }

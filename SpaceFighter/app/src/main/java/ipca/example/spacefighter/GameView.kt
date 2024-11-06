@@ -5,6 +5,8 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Rect
+import android.os.Handler
+import android.os.Looper
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.SurfaceHolder
@@ -67,10 +69,6 @@ class GameView : SurfaceView, Runnable {
         gameThread?.start()
     }
 
-    fun pause() {
-        playing = false
-        gameThread?.join()
-    }
 
     override fun run() {
         while (playing){
@@ -79,7 +77,6 @@ class GameView : SurfaceView, Runnable {
             control()
         }
     }
-
 
     fun update(){
 
@@ -101,9 +98,7 @@ class GameView : SurfaceView, Runnable {
 
                 lives -= 1
 
-                if (lives == 0 ){
-                    onGameOver()
-                }
+
             }
 
         }
@@ -142,9 +137,25 @@ class GameView : SurfaceView, Runnable {
         }
     }
 
+    var callGameOverOnce = false
     fun control(){
         Thread.sleep(17)
+        if (lives == 0 ){
+            playing = false
+            Handler(Looper.getMainLooper()).post {
+                if (!callGameOverOnce) {
+                    onGameOver()
+                    callGameOverOnce = true
+                }
+                gameThread?.join()
+            }
+        }
     }
+
+    private var activePointers = 0
+
+    private val touchX = FloatArray(10) { -1f } // Store X coordinates of touch points (up to 10 fingers)
+    private val touchY = FloatArray(10) { -1f }
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {
 
@@ -162,6 +173,43 @@ class GameView : SurfaceView, Runnable {
                 warrior.y = event.y.toInt()
             }
         }
+
+        activePointers = event?.pointerCount?:0
+
+        // Process each touch point
+        for (i in 0 until activePointers) {
+            val pointerId = event?.getPointerId(i)?:0
+            touchX[pointerId] = event?.getX(i)?:-1f
+            touchY[pointerId] = event?.getY(i)?:-1f
+        }
+
+        // Handle touch actions
+        when (event?.actionMasked) {
+            MotionEvent.ACTION_DOWN, MotionEvent.ACTION_POINTER_DOWN -> {
+                // A new finger touched the screen
+
+
+            }
+            MotionEvent.ACTION_MOVE -> {
+                // Handle movement of each finger
+            }
+            MotionEvent.ACTION_UP, MotionEvent.ACTION_POINTER_UP -> {
+                // A finger was lifted up
+                val pointerIndex = event.actionIndex
+                val pointerId = event.getPointerId(pointerIndex)
+                touchX[pointerId] = -1f
+                touchY[pointerId] = -1f
+            }
+            MotionEvent.ACTION_CANCEL -> {
+                // Reset all points on cancel
+                for (i in touchX.indices) {
+                    touchX[i] = -1f
+                    touchY[i] = -1f
+                }
+            }
+        }
+
+
         return true
     }
 

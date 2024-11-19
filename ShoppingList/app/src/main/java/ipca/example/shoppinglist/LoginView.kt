@@ -18,7 +18,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import ipca.example.shoppinglist.ui.theme.ShoppingListTheme
 
 @Composable
-fun LoginView(modifier: Modifier = Modifier) {
+fun LoginView(modifier: Modifier = Modifier,
+              onLoginSuccess : ()->Unit = {}) {
 
     val viewModel : LoginViewModel = viewModel()
     val state = viewModel.state.value
@@ -48,7 +49,12 @@ fun LoginView(modifier: Modifier = Modifier) {
             )
             Spacer(modifier = Modifier.height(16.dp))
             Button(
-                onClick = viewModel::onLoginClick,
+                onClick = {
+                    viewModel.onLoginClick {
+                        onLoginSuccess()
+                    }
+
+                },
                 content = {
                     Text("Login")
                 }

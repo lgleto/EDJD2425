@@ -27,7 +27,7 @@ class LoginViewModel : ViewModel() {
         state.value = state.value.copy(password = password)
     }
 
-    fun onLoginClick() {
+    fun onLoginClick( onLoginSuccess: ()->Unit) {
         state.value = state.value.copy(isLoading = true)
 
         val auth: FirebaseAuth = Firebase.auth
@@ -39,7 +39,7 @@ class LoginViewModel : ViewModel() {
                     // Sign in success, update UI with the signed-in user's information
                     Log.d(TAG, "signInWithEmail:success")
                     val user = auth.currentUser
-
+                    onLoginSuccess()
                 } else {
                     // If sign in fails, display a message to the user.
                     Log.w(TAG, "signInWithEmail:failure", task.exception)

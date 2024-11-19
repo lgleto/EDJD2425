@@ -1,7 +1,11 @@
 package ipca.example.shoppinglist
 
+import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
+import com.google.firebase.firestore.firestore
 
 data class AddListState(
     val name : String = "",
@@ -20,6 +24,26 @@ class AddListViewModel : ViewModel(){
 
     fun addList(){
 
+        val db = Firebase.firestore
+
+        val auth = Firebase.auth
+        val currentUser = auth.currentUser
+        val userId = currentUser?.uid
+
+        val listItems = ListItems(
+            "",
+            state.value.name,
+            arrayListOf(userId?:"")
+        )
+
+        db.collection("lists")
+            .add(listItems)
+            .addOnSuccessListener { documentReference ->
+                Log.d(TAG, "DocumentSnapshot written with ID: ${documentReference.id}")
+            }
+            .addOnFailureListener { e ->
+                Log.w(TAG, "Error adding document", e)
+            }
     }
 
 }

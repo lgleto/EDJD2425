@@ -1,4 +1,4 @@
-package ipca.example.shoppinglist
+package ipca.example.shoppinglist.ui.lists
 
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
@@ -6,6 +6,8 @@ import androidx.lifecycle.ViewModel
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import com.google.firebase.firestore.firestore
+import ipca.example.shoppinglist.TAG
+import ipca.example.shoppinglist.models.ListItems
 
 data class ListListsState(
     val listItemsList : List<ListItems> = arrayListOf(),
@@ -34,6 +36,7 @@ class ListListsViewModel : ViewModel(){
                 for (document in documents) {
                     Log.d(TAG, "${document.id} => ${document.data}")
                     val listItem = document.toObject(ListItems::class.java)
+                    listItem.docId = document.id
                     listItemsList.add(listItem)
                 }
                 state.value = state.value.copy(

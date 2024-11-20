@@ -1,4 +1,4 @@
-package ipca.example.shoppinglist
+package ipca.example.shoppinglist.ui.login
 
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import ipca.example.shoppinglist.TAG
 
 data class LoginState(
     val email: String = "",

@@ -1,4 +1,4 @@
-package ipca.example.shoppinglist
+package ipca.example.shoppinglist.models
 
 data class ListItems (
     var docId : String?,

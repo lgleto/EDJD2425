@@ -1,4 +1,4 @@
-package ipca.example.shoppinglist.ui.lists
+package ipca.example.shoppinglist.ui.lists.items
 
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
@@ -7,33 +7,39 @@ import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import com.google.firebase.firestore.firestore
 import ipca.example.shoppinglist.TAG
+import ipca.example.shoppinglist.models.Item
 import ipca.example.shoppinglist.models.ListItems
-import ipca.example.shoppinglist.repositories.ListItemsRepository
+import ipca.example.shoppinglist.repositories.ItemRepository
 
-data class AddListState(
+data class AddItemState(
     val name : String = "",
+    val qtd : Double = 0.0,
     val isLoading: Boolean = false,
     val error: String? = null
 )
 
-class AddListViewModel : ViewModel(){
+class AddItemViewModel : ViewModel(){
 
-    var state = mutableStateOf(AddListState())
+    var state = mutableStateOf(AddItemState())
         private set
 
     fun onNameChange(name: String) {
         state.value = state.value.copy(name = name)
     }
 
-    fun addList(){
+    fun onQttChange(qtd: Double) {
+        state.value = state.value.copy(qtd = qtd)
+    }
 
-        val listItems = ListItems(
+    fun addItem(listId: String){
+
+        val item = Item(
             "",
             state.value.name,
-            null,
+            state.value.qtd
         )
 
-        ListItemsRepository.addList(listItems)
+        ItemRepository.addItem(listId, item)
     }
 
 }

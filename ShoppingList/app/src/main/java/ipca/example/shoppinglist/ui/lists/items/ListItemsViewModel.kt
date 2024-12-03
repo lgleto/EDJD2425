@@ -8,6 +8,7 @@ import com.google.firebase.auth.auth
 import com.google.firebase.firestore.firestore
 import ipca.example.shoppinglist.TAG
 import ipca.example.shoppinglist.models.Item
+import ipca.example.shoppinglist.repositories.ItemRepository
 
 data class ListItemsState(
     val items : List<Item> = arrayListOf(),
@@ -22,46 +23,18 @@ class ListItemsViewModel : ViewModel(){
 
 
     fun getItems(listId : String){
-
-        val db = Firebase.firestore
-
-        db.collection("lists")
-            .document(listId)
-            .collection("items")
-            .addSnapshotListener{ value, error->
-                if (error!=null){
-                    state.value = state.value.copy(
-                        error = error.message
-                    )
-                    return@addSnapshotListener
-                }
-
-                val items = arrayListOf<Item>()
-                for (document in value?.documents!!) {
-                    Log.d(TAG, "${document.id} => ${document.data}")
-                    val item = document.toObject(Item::class.java)
-                    item?.docId = document.id
-                    items.add(item!!)
-                }
-                state.value = state.value.copy(
-                    items = items
-                )
-            }
-
+        ItemRepository.getItems(listId){ items, error->
+            state.value = state.value.copy(
+                error = error,
+                items = items
+            )
+        }
     }
 
     fun toggleItemChecked(listId: String, item: Item){
-        val db = Firebase.firestore
-        
-        item.checked = !item.checked
-
-        db.collection("lists")
-            .document(listId)
-            .collection("items")
-            .document(item.docId!!)
-            .set(item)
-
+        ItemRepository.setChecked(listId,item, !item.checked)
     }
+
 
 
 }

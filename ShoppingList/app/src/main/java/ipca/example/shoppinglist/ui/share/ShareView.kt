@@ -1,9 +1,10 @@
-package ipca.example.shoppinglist.ui.lists.items
+package ipca.example.shoppinglist.ui.share
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -28,13 +29,13 @@ import ipca.example.shoppinglist.Screen
 import ipca.example.shoppinglist.ui.theme.ShoppingListTheme
 
 @Composable
-fun ListItemsView(
+fun ShareView(
     modifier: Modifier = Modifier,
     listId : String,
     navController: NavController = rememberNavController()
                   ){
 
-    val viewModel : ListItemsViewModel = viewModel()
+    val viewModel : ShareViewModel = viewModel()
     val state = viewModel.state.value
 
 
@@ -43,50 +44,39 @@ fun ListItemsView(
 
         LazyColumn(modifier = modifier.fillMaxSize()) {
             itemsIndexed(
-                items = state.items
-            ) { index, item ->
+                items = state.users
+            ){  index, item ->
 
-                ItemRomView(item = item) {
-                    viewModel
-                        .toggleItemChecked(
-                            listId = listId,
-                            item = item
-                        )
-                }
-            }
-        }
-        Row {
-            Button(
-                modifier = Modifier
-                    .padding(16.dp)
-                    .size(64.dp),
-                onClick = {
-
-                    navController.navigate(Screen.AddItem.route.replace("{listId}", listId))
-                }) {
-                Image(
+                Text(
                     modifier = Modifier
-                        .scale(2.0f)
-                        .size(64.dp),
-                    colorFilter = ColorFilter.tint(Color.White),
-                    painter = painterResource(R.drawable.baseline_add_24),
-                    contentDescription = "add"
-                )
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                        .clickable {
+                            viewModel.shareWithUser(listId,item)
+                            navController.popBackStack()
+                        },
+                    text = item.name?:"")
+
             }
         }
+
+
+
+
     }
 
-
     LaunchedEffect (key1 = true){
-        viewModel.getItems(listId)
+        viewModel.getUsers()
     }
 
 }
 
 @Preview(showBackground = true)
 @Composable
-fun ListItemsViewPreview(){
+fun ListListViewPreview(){
     ShoppingListTheme {
-        ListItemsView(listId = "")
+        ShareView(
+            listId = ""
+        )
     }
 }

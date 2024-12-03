@@ -52,7 +52,9 @@ fun ListListsView(
                         .padding(16.dp)
                         .clickable {
                             navController.navigate(
-                                Screen.ListItems.route.replace("{listId}", item.docId!!)
+                                Screen.ListItems.route
+                                    .replace("{listId}", item.docId!!)
+                                    .replace("{name}", item.name?:"")
                             )
                         },
                     text = item.name?:"")

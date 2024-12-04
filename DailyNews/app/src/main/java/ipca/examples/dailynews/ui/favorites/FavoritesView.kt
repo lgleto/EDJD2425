@@ -1,10 +1,9 @@
-package ipca.examples.dailynews.ui
+package ipca.examples.dailynews.ui.favorites
 
 import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.Text
@@ -14,34 +13,36 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import ipca.examples.dailynews.Screen
-import ipca.examples.dailynews.encodeURL
 import ipca.examples.dailynews.models.Article
+import ipca.examples.dailynews.ui.RowArticle
 import ipca.examples.dailynews.ui.theme.DailyNewsTheme
 
 @Composable
-fun HomeView(
+fun FavoritesView(
     modifier: Modifier = Modifier,
     navController: NavController = rememberNavController()) {
 
-    val viewModel : HomeViewModel = viewModel()
+    val context = LocalContext.current
+    val viewModel : FavotritesViewModel = viewModel()
     val uiState by viewModel.uiState.collectAsState()
 
-    HomeViewContent(modifier = modifier,
+    FavotritesViewContent(modifier = modifier,
         navController = navController,
         uiState = uiState)
 
     LaunchedEffect(Unit) {
-        viewModel.fetchArticles()
+        viewModel.fetchArticles(context)
     }
 }
 
 @Composable
-fun HomeViewContent(modifier: Modifier = Modifier,
+fun  FavotritesViewContent(modifier: Modifier = Modifier,
                     navController: NavController = rememberNavController(),
                     uiState: ArticlesState) {
     Box(modifier = Modifier.fillMaxSize(),
@@ -90,7 +91,7 @@ fun HomeViewPreview() {
 
     //val articles = arrayListOf<Article>()
     DailyNewsTheme {
-        HomeViewContent(uiState = ArticlesState(
+        FavotritesViewContent(uiState = ArticlesState(
             articles = articles,
             isLoading = false,
             error = null

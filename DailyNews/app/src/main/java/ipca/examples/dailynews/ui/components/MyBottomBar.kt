@@ -35,7 +35,7 @@ fun MyBottomBar(
 
     var selectedIndex by rememberSaveable { mutableIntStateOf(0) }
 
-    var items = listOf(
+    val items = listOf(
         BottomNavigationItem(
             title = "Home",
             selectedIcon = Icons.Filled.Home,

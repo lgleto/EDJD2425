@@ -1,5 +1,6 @@
 package ipca.examples.dailynews.ui.components
 
+import android.content.Intent
 import android.provider.Settings.Global
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -12,6 +13,12 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -32,7 +39,10 @@ fun MyTopAppBar(
     isBaseScreen : Boolean,
     article: Article?
 ){
-    var context = LocalContext.current
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    var articleIsFavorite by remember { mutableStateOf(false) }
+
     TopAppBar(title = {
         if (article != null){
             Text(article.title!!,
@@ -63,7 +73,13 @@ fun MyTopAppBar(
                 IconButton(
                     onClick = {
                         // TODO: share article
-
+                        val sendIntent: Intent = Intent().apply {
+                            action = Intent.ACTION_SEND
+                            putExtra(Intent.EXTRA_TEXT, article?.title)
+                            putExtra(Intent.EXTRA_SUBJECT, article?.description)
+                            type = "text/plain"
+                        }
+                        context.startService(sendIntent)
                     }
                 ) {
                     Icon(
@@ -74,23 +90,26 @@ fun MyTopAppBar(
                 IconButton(
                     onClick = {
                         // TODO: toggle favorites
-                        GlobalScope.launch(Dispatchers.IO) {
+
+                        scope.launch(Dispatchers.IO) {
                             AppDatabase.getInstance(context)
                                 ?.articleDao()
                                 ?.insert(article!!)
-                        }
 
+                        }
                     }
                 ) {
                     Icon(
-                        imageVector = Icons.Filled.FavoriteBorder,
+                        imageVector = if (articleIsFavorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
                         contentDescription = "Favorites"
                     )
                 }
             }
         }
-        
     )
+
+
+
 }
 
 @Preview(showBackground = true)

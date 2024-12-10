@@ -15,12 +15,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import ipca.examples.dailynews.Screen
 import ipca.examples.dailynews.models.Article
-import ipca.examples.dailynews.ui.RowArticle
+import ipca.examples.dailynews.ui.home.RowArticle
 import ipca.examples.dailynews.ui.theme.DailyNewsTheme
 
 @Composable
@@ -28,8 +29,7 @@ fun FavoritesView(
     modifier: Modifier = Modifier,
     navController: NavController = rememberNavController()) {
 
-    val context = LocalContext.current
-    val viewModel : FavotritesViewModel = viewModel()
+    val viewModel : FavotritesViewModel = hiltViewModel()
     val uiState by viewModel.uiState.collectAsState()
 
     FavotritesViewContent(modifier = modifier,
@@ -37,7 +37,7 @@ fun FavoritesView(
         uiState = uiState)
 
     LaunchedEffect(Unit) {
-        viewModel.fetchArticles(context)
+        viewModel.fetchArticles()
     }
 }
 
